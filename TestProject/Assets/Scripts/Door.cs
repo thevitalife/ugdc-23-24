@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,13 +8,22 @@ public class Door : Interactable
     [SerializeField]
     private Animator animator;
 
-    public override void Interact(PlayerInteractor interactor)
+    [SerializeField]
+    private string accessInventoryItemKey = "DoorKey";
+
+    public override void Interact(IInteractor interactor)
     {
-        base.Interact(interactor);
-        animator.SetBool("IsOpen", !animator.GetBool("IsOpen"));
+
+        bool isOpen = animator.GetBool("IsOpen");
+
+        if (isOpen || (interactor is ICharacterInteractor characterInteractor && characterInteractor.Inventory.Contains(accessInventoryItemKey)))
+        {
+            base.Interact(interactor);
+            animator.SetBool("IsOpen", !isOpen);
+        }
     }
 
-    public override void Deactivate(PlayerInteractor interactor)
+    public override void Deactivate(IInteractor interactor)
     {
         base.Deactivate(interactor);
         animator.SetBool("IsOpen", false);

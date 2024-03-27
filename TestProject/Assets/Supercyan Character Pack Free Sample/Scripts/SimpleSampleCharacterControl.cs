@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 public class SimpleSampleCharacterControl : MonoBehaviour
 {
     private enum ControlMode
@@ -23,6 +22,8 @@ public class SimpleSampleCharacterControl : MonoBehaviour
     [SerializeField] private Rigidbody m_rigidBody = null;
 
     [SerializeField] private ControlMode m_controlMode = ControlMode.Direct;
+
+    private IMovementInputProvider movementInputProvider;
 
     private float m_currentV = 0;
     private float m_currentH = 0;
@@ -47,6 +48,7 @@ public class SimpleSampleCharacterControl : MonoBehaviour
     {
         if (!m_animator) { gameObject.GetComponent<Animator>(); }
         if (!m_rigidBody) { gameObject.GetComponent<Animator>(); }
+        movementInputProvider = GetComponent<IMovementInputProvider>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -106,7 +108,7 @@ public class SimpleSampleCharacterControl : MonoBehaviour
 
     private void Update()
     {
-        if (!m_jumpInput && Input.GetKey(KeyCode.Space))
+        if (!m_jumpInput && movementInputProvider.IsJumping())
         {
             m_jumpInput = true;
         }
@@ -137,10 +139,11 @@ public class SimpleSampleCharacterControl : MonoBehaviour
 
     private void TankUpdate()
     {
-        float v = Input.GetAxis("Vertical");
-        float h = Input.GetAxis("Horizontal");
 
-        bool walk = Input.GetKey(KeyCode.LeftShift);
+        var direction = movementInputProvider.GetDirection();
+        var v = direction.x;
+        var h = direction.y;
+        var walk = movementInputProvider.IsWalking();
 
         if (v < 0)
         {
@@ -165,12 +168,13 @@ public class SimpleSampleCharacterControl : MonoBehaviour
 
     private void DirectUpdate()
     {
-        float v = Input.GetAxis("Vertical");
-        float h = Input.GetAxis("Horizontal");
+        var inputDirection = movementInputProvider.GetDirection();
+        var v = inputDirection.x;
+        var h = inputDirection.y;
 
         Transform camera = Camera.main.transform;
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (movementInputProvider.IsWalking())
         {
             v *= m_walkScale;
             h *= m_walkScale;
@@ -179,11 +183,7 @@ public class SimpleSampleCharacterControl : MonoBehaviour
         m_currentV = Mathf.Lerp(m_currentV, v, Time.deltaTime * m_interpolation);
         m_currentH = Mathf.Lerp(m_currentH, h, Time.deltaTime * m_interpolation);
 
-        Vector3 direction = camera.forward * m_currentV + camera.right * m_currentH;
-
-        float directionLength = direction.magnitude;
-        direction.y = 0;
-        direction = direction.normalized * directionLength;
+        var direction = new Vector3(inputDirection.x, 0, inputDirection.y);
 
         if (direction != Vector3.zero)
         {
