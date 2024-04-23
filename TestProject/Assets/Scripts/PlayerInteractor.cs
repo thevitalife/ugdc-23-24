@@ -79,8 +79,13 @@ public class PlayerInteractor : MonoBehaviour, ICharacterInteractor
         {
             foreach (Interactable interactable in interactables)
             {
-                interactable.Interact(this);
+                Interact(interactable);
             }
         }
+    }
+
+    public void Interact(Interactable interactable)
+    {
+        interactable.Interact(this);
     }
 }
