@@ -17,6 +17,11 @@ public class InventoryView : MonoBehaviour
     [SerializeField]
     private Inventory inventory;
 
+    [SerializeField] 
+    private Animator animator;
+    
+    public bool IsShowing { get; private set; }
+
     private void OnEnable()
     {
         inventory.OnInventoryChanged += Inventory_OnInventoryChanged;
@@ -41,6 +46,36 @@ public class InventoryView : MonoBehaviour
     private void OnDisable()
     {
         inventory.OnInventoryChanged -= Inventory_OnInventoryChanged;
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+        animator.SetBool("IsShowing", true);
+        IsShowing = true;
+    }
+
+    public void FinishHiding()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void Hide()
+    {
+        animator.SetBool("IsShowing", false);
+        IsShowing = false;
+    }
+
+    public void SwitchShowing()
+    {
+        if (IsShowing)
+        {
+            Hide();
+        }
+        else
+        {
+            Show();
+        }
     }
 
 }

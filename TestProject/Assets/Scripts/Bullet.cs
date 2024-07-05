@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Melanchall.DryWetMidi.Core;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -25,6 +26,8 @@ public class Bullet : MonoBehaviour
     private void Start()
     {
         Move();
+        MidiFile midiFile = new MidiFile();
+        MidiFile midiFile2 = new MidiFile(new TrackChunk());
     }
 
     public void Move()

@@ -14,7 +14,7 @@ public class GameMenuUIController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            inventoryView.gameObject.SetActive(!inventoryView.gameObject.activeSelf);
+            inventoryView.SwitchShowing();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
